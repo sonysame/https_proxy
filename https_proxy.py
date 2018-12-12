@@ -2,7 +2,7 @@ import socket, threading, ssl
 import time
 import sys
 
-class ClientThread(threading.Thread):
+class ProxyThread(threading.Thread):
     
     def __init__(self, clientAddress, clientSocket, port):
         threading.Thread.__init__(self)
@@ -78,7 +78,7 @@ def main():
                                             keyfile='./key/test.com.key'
                                             )
             """
-            newThread = ClientThread(clientAddr, clientSock, port)
+            newThread = ProxyThread(clientAddr, clientSock, port)
             newThread.daemon=True
             newThread.start()
     except:
