@@ -26,14 +26,19 @@ class ProxyThread(threading.Thread):
         serverPort=443
         serverName=HOST
         #print(serverName, serverPort, User_Agent)
-        new_request=""
-        new_request="GET / HTTP/1.1\r\nHost: "+serverName+"\r\n"+User_Agent+"\r\n"
-        print(new_request)
-
+        #new_request=""
+        #new_request="GET / HTTP/1.1\r\nHost: "+serverName+"\r\n"+User_Agent+"\r\n"
+        #print(new_request)
+        
+        self.csocket.send(bytes("HTTP/1.1 200 Connection established\r\n\r\n",'ascii'))
+        
         certfile="./%s.pem"%serverName
         if not os.path.exists(certfile):
             os.system("./_make_site.sh "+serverName)
+        
         self.csocket=ssl.wrap_socket(self.csocket, certfile=certfile, server_side=True)
+        new_request=self.csocket.recv(20000)
+        
         clientSocket2= ssl.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM))
         clientSocket2.connect((serverName,serverPort))
         clientSocket2.send(bytes(new_request,"ascii"))
