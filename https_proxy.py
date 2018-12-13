@@ -1,6 +1,7 @@
 import socket, threading, ssl
 import time
 import sys
+import os
 
 class ProxyThread(threading.Thread):
     
@@ -28,11 +29,12 @@ class ProxyThread(threading.Thread):
         new_request=""
         new_request="GET / HTTP/1.1\r\nHost: "+serverName+"\r\n"+User_Agent+"\r\n"
         print(new_request)
-        clientSocket2=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        clientSocket2= ssl.wrap_socket(clientSocket2, 
-                           certfile='./key/test.com.crt',
-                           keyfile='./key/test.com.key'
-                        )
+
+        certfile="./%s.pem"%serverName
+        if not os.path.exists(certfile):
+            os.system("./_make_site.sh "+serverName)
+        self.csocket=ssl.wrap_socket(self.csocket, certfile=certfile, server_side=True)
+        clientSocket2= ssl.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM))
         clientSocket2.connect((serverName,serverPort))
         clientSocket2.send(bytes(new_request,"ascii"))
 
